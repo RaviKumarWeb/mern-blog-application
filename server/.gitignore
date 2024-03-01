@@ -1,0 +1,37 @@
+# Dependency directories
+node_modules/
+
+# Environment variables file (e.g., .env)
+.env
+
+# Logs
+logs
+*.log
+
+# Debugging files
+npm-debug.log*
+
+# Dependency lock files
+package-lock.json
+yarn.lock
+
+# Editor directories and files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Built production files
+dist/
+build/
+out/
+
+# Local configuration files
+config.js
