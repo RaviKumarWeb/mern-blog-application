@@ -10,7 +10,7 @@ const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 const exp = require("constants");
 
 const app = express();
-app.use(cors({ credentials: true, origin: "https://merb-blog-ravi.netlify.app/" }));
+app.use(cors({ credentials: true, origin: "https://merb-blog-ravi.netlify.app" }));
 app.use(express.json({ extended: true }));
 app.use(express.urlencoded({ extended: true }));
 
