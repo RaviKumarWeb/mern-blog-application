@@ -13,7 +13,7 @@ const app = express();
 app.use(express.json({ extended: true }));
 app.use(express.urlencoded({ extended: true }));
 
-app.use(cors({ credentials: true, origin: "https://65e190c302b76b9ed32d0da9--merb-blog-ravi.netlify.app/" }));
+app.use(cors({ credentials: true, origin: "https://merb-blog-ravi.netlify.app/" }));
 app.use(upload());
 app.use("/uploads", express.static(__dirname + "/uploads"));
 
