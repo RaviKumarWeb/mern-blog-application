@@ -11,10 +11,10 @@ const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 const exp = require("constants");
 
 const app = express();
+app.use(cors({ credentials: true, origin: "https://merb-blog-ravi.netlify.app" }));
 app.use(express.json({ extended: true }));
 app.use(express.urlencoded({ extended: true }));
 
-app.use(cors({ credentials: true, origin: "http://localhost:5173" }));
 app.use(upload());
 app.use("/uploads", express.static(__dirname + "/uploads"));
 
