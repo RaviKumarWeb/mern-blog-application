@@ -2,8 +2,16 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const path = require("path");
-
+const util = require("util");
+const writeFile = util.promisify(fs.writeFile);
+const cloudinary = require("cloudinary").v2;
 const { v4: uuid } = require("uuid");
+
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET,
+});
 
 const User = require("../model/userModel");
 const HttpError = require("../model/errorModel");
@@ -90,53 +98,51 @@ const getUser = async (req, res, next) => {
 
 const changeAvatar = async (req, res, next) => {
   try {
-    if (!req.files.avatar) {
-      return next(new HttpError("Please choose an image.", 422));
+    // Check if an avatar file was uploaded
+    if (!req.files || !req.files.avatar) {
+      return res.status(400).json({ message: "Please choose an image." });
     }
+
+    // Find the user by ID
     const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    // If the user has an existing avatar, delete it from Cloudinary
     if (user.avatar) {
-      fs.unlink(path.join(__dirname, "..", "uploads", user.avatar), (err) => {
-        if (err) {
-          return next(new HttpError(err));
-        }
+      await cloudinary.uploader.destroy(user.avatar); // Delete the previous avatar from Cloudinary
+    }
+
+    const avatarFile = req.files.avatar;
+    if (avatarFile.size > 500000) {
+      return res.status(422).json({
+        message: "Profile picture too big. Should be less than 500kb",
       });
     }
 
-    const { avatar } = req.files;
-    if (avatar.size > 500000) {
-      return next(
-        new HttpError("Profile picture too big. shuld be less than 500kb", 422)
-      );
-    }
+    // Construct temporary file path for local storage
+    const tempFilePath = `uploads/${Date.now()}-${avatarFile.name}`;
 
-    let fileName;
-    fileName = avatar.name;
-    let splittedFileName = fileName.split(".");
-    let newFileName =
-      splittedFileName[0] +
-      uuid() +
-      "." +
-      splittedFileName[splittedFileName.length - 1];
-    avatar.mv(
-      path.join(__dirname, "..", "uploads", newFileName),
-      async (err) => {
-        if (err) {
-          return next(new HttpError(err));
-        }
+    // Move the uploaded file to the temporary file path
+    await avatarFile.mv(tempFilePath);
 
-        const updatedAvatar = await User.findByIdAndUpdate(
-          req.user.id,
-          { avatar: newFileName },
-          { new: true }
-        );
-        if (!updatedAvatar) {
-          return next(new HttpError("Avatar couldn't be changed", 422));
-        }
-        res.status(200).json(updatedAvatar);
-      }
-    );
+    // Upload the temporary file to Cloudinary
+    const result = await cloudinary.uploader.upload(tempFilePath);
+
+    // Cleanup: Delete the temporary file
+    fs.unlinkSync(tempFilePath);
+
+    // Update the user's avatar field with the new image URL
+    user.avatar = result.secure_url;
+    await user.save();
+
+    // Respond with the updated user object
+    res.status(200).json({ user, message: "Avatar updated successfully." });
   } catch (error) {
-    return next(new HttpError(error));
+    console.error(error);
+    // Handle error
+    res.status(500).json({ message: "Error uploading avatar" });
   }
 };
 

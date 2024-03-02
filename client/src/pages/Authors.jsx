@@ -47,12 +47,7 @@ const Authors = () => {
             return (
               <Link key={id} to={`/posts/users/${id}`} className=" author">
                 <div className="author_avatar">
-                  <img
-                    src={`${
-                      import.meta.env.VITE_REACT_APP_ASSETS_URL
-                    }/uploads/${avatar}`}
-                    alt={`Image of ${name}`}
-                  />
+                  <img src={`${avatar}`} alt={`Image of ${name}`} />
                 </div>
                 <div className="author_info">
                   <h4>{name}</h4>

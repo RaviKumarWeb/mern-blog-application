@@ -63,12 +63,7 @@ const Dashboard = () => {
               <article key={post._id} className="dashboard_post">
                 <div className="dashboard_post-info">
                   <div className="dashboard_post-thumbnail">
-                    <img
-                      src={`${
-                        import.meta.env.VITE_REACT_APP_ASSETS_URL
-                      }/uploads/${post.thumbnail}`}
-                      alt=""
-                    />
+                    <img src={`${post.thumbnail}`} alt="" />
                   </div>
                   <h5>{post.title}</h5>
                 </div>

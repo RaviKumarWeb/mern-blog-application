@@ -28,12 +28,7 @@ const PostAuthor = ({ authorID, createdAt }) => {
   return (
     <Link to={`/posts/users/${authorID}`} className=" post_author">
       <div className="post_author-avatar">
-        <img
-          src={`${import.meta.env.VITE_REACT_APP_ASSETS_URL}/uploads/${
-            author?.avatar
-          }`}
-          alt=""
-        />
+        <img src={`${author?.avatar}`} alt="" />
       </div>
       <div className="post_author-details">
         <h5>By: {author?.name}</h5>

@@ -4,6 +4,8 @@ import { useState, useContext, useEffect } from "react";
 import { UserContext } from "../context/userContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { ColorRing } from "react-loader-spinner";
+
 const UserProfile = () => {
   const [avatar, setAvatar] = useState("");
   const [name, setName] = useState("");
@@ -12,6 +14,7 @@ const UserProfile = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPasword] = useState("");
   const [isAvatarTouched, setIsAvatarTouched] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
 
   const navigate = useNavigate();
@@ -41,6 +44,7 @@ const UserProfile = () => {
 
   const changeAvatarHandler = async () => {
     setIsAvatarTouched(false);
+    setIsLoading(true);
     try {
       const postData = new FormData();
       postData.set("avatar", avatar);
@@ -49,11 +53,13 @@ const UserProfile = () => {
         postData,
         { withCredentials: true, headers: { Authorization: `Bearer ${token}` } }
       );
+      navigate(0);
       console.log(response?.data);
       setAvatar(response?.data.avatar);
     } catch (error) {
       console.log(error);
     }
+    setIsLoading(false);
   };
 
   const updateUserDetails = async (e) => {
@@ -79,6 +85,22 @@ const UserProfile = () => {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="loader">
+        <ColorRing
+          visible={true}
+          height="80"
+          width="80"
+          ariaLabel="color-ring-loading"
+          wrapperStyle={{}}
+          wrapperClass="color-ring-wrapper"
+          colors={["#e15b64", "#f47e60", "#f8b26a", "#abbd81", "#849b87"]}
+        />
+      </div>
+    );
+  }
+
   return (
     <section className=" profile">
       <div className="container profile_container">
@@ -89,12 +111,7 @@ const UserProfile = () => {
         <div className="profile_details">
           <div className="avatar_wrapper">
             <div className="profile_avatar">
-              <img
-                src={`${
-                  import.meta.env.VITE_REACT_APP_ASSETS_URL
-                }/uploads/${avatar}`}
-                alt=""
-              />
+              <img src={`${avatar}`} alt="" />
             </div>
 
             <form className=" avatar_form">

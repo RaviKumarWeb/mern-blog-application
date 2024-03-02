@@ -24,12 +24,7 @@ const PostItem = ({
   return (
     <article className=" post">
       <div className="post_thumbnail">
-        <img
-          src={`${
-            import.meta.env.VITE_REACT_APP_ASSETS_URL
-          }/uploads/${thumbnail}`}
-          alt={title}
-        />
+        <img src={`${thumbnail}`} alt={title} />
       </div>
       <div className="post_content">
         <Link to={`/posts/${postID}`}>
